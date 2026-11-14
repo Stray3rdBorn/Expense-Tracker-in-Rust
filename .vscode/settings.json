@@ -28,5 +28,12 @@
     "titleBar.inactiveBackground": "#ff000099",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#ff0000"
+
+    "peacock.color": "#ff0000",
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  }
+}
+  
 }

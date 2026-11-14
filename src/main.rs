@@ -12,6 +12,7 @@ fn main() {
     let result = add(x, y);
     println!("Result of add(x, y): {result}");
 
+    println!("Before reassignment: {z}");
     z = 200;
     println!("After z = 200: {z}");
 
@@ -32,5 +33,53 @@ fn main() {
     print_it(&s);
     replace(&mut s);
     println!("After the mutable borrow: {s}");
-}
 
+    // struct
+    struct Expense {
+        amount: f64,
+        category: String,
+        note: String,
+    }
+    let groceries = Expense {
+        amount: 1000.0,
+        category: String::from("food"),
+        note: String::from("groceries"),
+    };
+
+    let coffee = Expense {
+        amount: 5.0,
+        category: String::from("food"),
+        note: String::from("coffee"),
+    };
+
+    println!(
+        "Groceries: {}, {}, {}",
+        groceries.amount, groceries.category, groceries.note
+    );
+    println!(
+        "Coffee: {}, {}, {}",
+        coffee.amount, coffee.category, coffee.note
+    );
+
+    fn read_input() -> String {
+        let mut value = String::new();
+        std::io::stdin()
+            .read_line(&mut value)
+            .expect("Could not read input");
+        value.trim().to_string()
+    }
+
+    let amount: f64 = read_input().parse().expect("Could not read input");
+    let category = read_input();
+    let note = read_input();
+    let drinks: Expense = Expense {
+        amount,
+        category,
+        note,
+    };
+
+    println!(
+        "Drinks: {}, {}, {}",
+        drinks.amount, drinks.category, drinks.note
+    );
+}
