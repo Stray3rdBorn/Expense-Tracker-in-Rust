@@ -5,27 +5,33 @@ fn main() {
     let y = 10;
     let mut z = 100;
 
-    // function
-
-    fn add(x: i32, y: i32) -> i32 { 
-        x + y 
+    fn add(x: i32, y: i32) -> i32 {
+        x + y
     }
 
     let result = add(x, y);
-    println!("Result: {result} ");
+    println!("Result of add(x, y): {result}");
 
-        // ownership
+    println!("Before reassignment: {z}");
+    z = 200;
+    println!("After z = 200: {z}");
+
+    // String::from calls the from function associated with String.
     let s1 = String::from("hello");
-    let s2 = s1;              
-    println!("{}", s2);     
+    let s2 = s1;
+    println!("s2 owns the moved string: {s2}");
 
-    // borrow
     fn print_it(s: &String) {
-        println!("{}", s)
-
+        println!("Read-only borrow sees: {s}");
     }
-    let s = String::from("hi");
+
+    fn replace(text: &mut String) {
+        *text = String::from("something else");
+    }
+
+    let mut s = String::from("hi");
     print_it(&s);
-    println!("{}", s);
+    replace(&mut s);
+    println!("After the mutable borrow: {s}");
 }
 
