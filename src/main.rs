@@ -12,7 +12,6 @@ fn main() {
     let result = add(x, y);
     println!("Result of add(x, y): {result}");
 
-    println!("Before reassignment: {z}");
     z = 200;
     println!("After z = 200: {z}");
 
