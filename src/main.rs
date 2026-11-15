@@ -2,15 +2,13 @@
 mod expense {
     // print categories for debugging and compare them in tests.
     #[derive(Debug, PartialEq, Eq)]
-    // three choices.
+    // five choices.
     pub enum ExpenseCategory {
         Food,
         Rent,
         Bills,
         Clothes,
         Transport,
-        // any category not specifically listed above.
-        Other,
     }
 
     // information stored for one expense.
@@ -41,14 +39,18 @@ mod expense {
             .parse::<f64>()
             .map_err(|_| "amount must be a number".to_string())?;
 
-        // match the category text to a known variant, unrecognized names become Other.
+        // match the category text to a known variant
         let category = match category_text.trim().to_lowercase().as_str() {
-            // treat "food", regardless of letter case, as the Food category.
             "food" => ExpenseCategory::Food,
-            // treat "transport", regardless of letter case, as the Transport category.
             "transport" => ExpenseCategory::Transport,
-            // use Other for every category name not listed above.
-            _ => ExpenseCategory::Other,
+            "clothes" => ExpenseCategory::Clothes,
+            "bills" => ExpenseCategory::Bills,
+            "rent" => ExpenseCategory::Rent,
+            _ => {
+                return Err(format!(
+                    "Unknown category '{category_text}'. Use Food, Transport, Clothes, Bills, or Rent."
+                ));
+            }
         };
 
         // take the third piece as the note, use empty text if no third piece exists.
