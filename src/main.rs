@@ -106,25 +106,24 @@ use expense::{Category, parse_expense, print_expense};
 
 // main rust program
 fn main() {
-    // provide sample input lines
-    let lines = [
-        "12.50,Food,lunch",
-        "4.00,Transport,bus",
-        // invalid amount included to demonstrate error handling.
-        "bad,Food,invalid amount",
-    ];
+    let line = read_input();
+    println!("You entered: {line}");
+
+    // take input from terminal
+    fn read_input() -> String {
+        let mut input = String::new();
+        std::io::stdin()
+            .read_line(&mut input)
+            .expect("Could not read input");
+        input.trim().to_string()
+    }
 
     // growable list that will hold successfully parsed expenses.
     let mut expenses = Vec::new();
 
-    // process each sample line one at a time.
-    for line in lines {
-        match parse_expense(line) {
-            // if parsing succeeds, add the Expense to the list.
-            Ok(expense) => expenses.push(expense),
-            // if parsing fails, print the error and continue to the next line.
-            Err(error) => println!("Skipping a line: {error}"),
-        }
+    match parse_expense(&line) {
+        Ok(expense) => expenses.push(expense),
+        Err(error) => println!("Skipping your input: {error}"),
     }
 
     // borrow each saved expense in turn so it can be printed without removing it from the list.
