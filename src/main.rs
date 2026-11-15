@@ -1,85 +1,149 @@
+// the expense-related types and functions grouped under the `expense` name.
+mod expense {
+    // print categories for debugging and compare them in tests.
+    #[derive(Debug, PartialEq, Eq)]
+    // three choices.
+    pub enum Category {
+        Food,
+
+        Transport,
+        // any category not specifically listed above.
+        Other,
+    }
+
+    // information stored for one expense.
+    #[derive(Debug)]
+    pub struct Expense {
+        //  the expense amount as a decimal number.
+        pub amount: f64,
+        //  the expense's category.
+        pub category: Category,
+        //  an optional note: Some(text) if present, or None if absent.
+        pub note: Option<String>,
+    }
+
+    // Convert one comma-separated text line into an Expense, or return an error message.
+    pub fn parse_expense(line: &str) -> Result<Expense, String> {
+        // Split the line at commas, with at most three pieces so the note may contain commas.
+        let mut parts = line.splitn(3, ',');
+
+        // take the first piece as the amount or report that it was missing.
+        let amount_text = parts.next().ok_or_else(|| "missing amount".to_string())?;
+        // take the second piece as the category or report that it was missing.
+        let category_text = parts.next().ok_or_else(|| "missing category".to_string())?;
+
+        // remove surrounding spaces, then convert the amount text into an f64 number.
+        let amount = amount_text
+            .trim()
+            // return a readable error instead if the text is not a valid number.
+            .parse::<f64>()
+            .map_err(|_| "amount must be a number".to_string())?;
+
+        // match the category text to a known variant, unrecognized names become Other.
+        let category = match category_text.trim().to_lowercase().as_str() {
+            // treat "food", regardless of letter case, as the Food category.
+            "food" => Category::Food,
+            // treat "transport", regardless of letter case, as the Transport category.
+            "transport" => Category::Transport,
+            // use Other for every category name not listed above.
+            _ => Category::Other,
+        };
+
+        // take the third piece as the note, use empty text if no third piece exists.
+        let note_text = parts.next().unwrap_or("").trim();
+        // represent a blank note as None and a non-blank note as Some(String).
+        let note = if note_text.is_empty() {
+            // there is no note to store.
+            None
+        } else {
+            // make an owned String so the note can be kept in the Expense.
+            Some(note_text.to_string())
+        };
+
+        // build an Expense from the parsed values and return it as a successful result.
+        Ok(Expense {
+            amount,
+
+            category,
+
+            note,
+        })
+    }
+
+    // print one expense without taking ownership of it.
+    pub fn print_expense(expense: &Expense) {
+        // borrow the note text, or display a placeholder when the note is absent.
+        let note = expense.note.as_deref().unwrap_or("(no note)");
+        // print the amount to two decimal places, then the category and note.
+        println!("{:.2} {:?}: {}", expense.amount, expense.category, note);
+    }
+
+    // test module only when running tests.
+    #[cfg(test)]
+    // keep tests for the expense module next to the code.
+    mod tests {
+        // bring names from the surrounding expense module into this test module.
+        use super::*;
+
+        // function as an automated test for `cargo test`.
+        #[test]
+        // check if expense line is parsed correctly.
+        fn parses_a_valid_expense() {
+            // parse one sample line, unwrap is fine here because the test expects success.
+            let expense = parse_expense("12.50,Food,lunch").unwrap();
+
+            assert_eq!(expense.amount, 12.50);
+
+            assert_eq!(expense.category, Category::Food);
+
+            assert_eq!(expense.note.as_deref(), Some("lunch"));
+        }
+    }
+}
+
+// expense module's names available to the main function.
+use expense::{Category, parse_expense, print_expense};
+
+// main rust program
 fn main() {
-    println!("Hello, world!");
+    // provide sample input lines
+    let lines = [
+        "12.50,Food,lunch",
+        "4.00,Transport,bus",
+        // invalid amount included to demonstrate error handling.
+        "bad,Food,invalid amount",
+    ];
 
-    let x = 5;
-    let y = 10;
-    let mut z = 100;
+    // growable list that will hold successfully parsed expenses.
+    let mut expenses = Vec::new();
 
-    fn add(x: i32, y: i32) -> i32 {
-        x + y
+    // process each sample line one at a time.
+    for line in lines {
+        match parse_expense(line) {
+            // if parsing succeeds, add the Expense to the list.
+            Ok(expense) => expenses.push(expense),
+            // if parsing fails, print the error and continue to the next line.
+            Err(error) => println!("Skipping a line: {error}"),
+        }
     }
 
-    let result = add(x, y);
-    println!("Result of add(x, y): {result}");
-
-    println!("Before reassignment: {z}");
-    z = 200;
-    println!("After z = 200: {z}");
-
-    // String::from calls the from function associated with String.
-    let s1 = String::from("hello");
-    let s2 = s1;
-    println!("s2 owns the moved string: {s2}");
-
-    fn print_it(s: &String) {
-        println!("Read-only borrow sees: {s}");
+    // borrow each saved expense in turn so it can be printed without removing it from the list.
+    for expense in &expenses {
+        print_expense(expense);
     }
 
-    fn replace(text: &mut String) {
-        *text = String::from("something else");
-    }
+    // read each amount, transform the amounts into a sequence, and add them together.
+    let total: f64 = expenses.iter().map(|expense| expense.amount).sum();
+    // count only expenses whose category is Food.
+    let food_count = expenses
+        // visit the saved expenses without taking them out of the vector.
+        .iter()
+        // keep only expenses that match the Food category.
+        .filter(|expense| expense.category == Category::Food)
+        // count how many expenses passed the filter.
+        .count();
 
-    let mut s = String::from("hi");
-    print_it(&s);
-    replace(&mut s);
-    println!("After the mutable borrow: {s}");
+    println!("Total: {total:.2}");
 
-    // struct
-    struct Expense {
-        amount: f64,
-        category: String,
-        note: String,
-    }
-    let groceries = Expense {
-        amount: 1000.0,
-        category: String::from("food"),
-        note: String::from("groceries"),
-    };
-
-    let coffee = Expense {
-        amount: 5.0,
-        category: String::from("food"),
-        note: String::from("coffee"),
-    };
-
-    println!(
-        "Groceries: {}, {}, {}",
-        groceries.amount, groceries.category, groceries.note
-    );
-    println!(
-        "Coffee: {}, {}, {}",
-        coffee.amount, coffee.category, coffee.note
-    );
-
-    fn read_input() -> String {
-        let mut value = String::new();
-        std::io::stdin()
-            .read_line(&mut value)
-            .expect("Could not read input");
-        value.trim().to_string()
-    }
-
-    let amount: f64 = read_input().parse().expect("Could not read input");
-    let category = read_input();
-    let note = read_input();
-    let drinks: Expense = Expense {
-        amount,
-        category,
-        note,
-    };
-
-    println!(
-        "Drinks: {}, {}, {}",
-        drinks.amount, drinks.category, drinks.note
-    );
+    println!("Food expenses: {food_count}");
 }
