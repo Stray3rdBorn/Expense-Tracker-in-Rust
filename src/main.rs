@@ -48,7 +48,7 @@ mod expense {
             "transport" => ExpenseCategory::Transport,
             _ => {
                 return Err(format!(
-                    "Unknown category '{category_text}'. Use Food, Transport, Clothes, Bills, or Rent."
+                    "Unknown category '{category_text}'. Use Food, Rent, Bills, Clothes, or Transport."
                 ));
             }
         };
@@ -129,6 +129,9 @@ fn main() {
     // take input from terminal
     fn read_input() -> String {
         let mut input = String::new();
+        println!(
+            "Enter amount,category,note (example: 12.50,Food,lunch). Categories: Food, Rent, Bills, Clothes, Transport. Press Enter on a blank line to finish."
+        );
         std::io::stdin()
             .read_line(&mut input)
             .expect("Could not read input");
