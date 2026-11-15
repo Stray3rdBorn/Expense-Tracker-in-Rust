@@ -42,10 +42,10 @@ mod expense {
         // match the category text to a known variant
         let category = match category_text.trim().to_lowercase().as_str() {
             "food" => ExpenseCategory::Food,
-            "transport" => ExpenseCategory::Transport,
-            "clothes" => ExpenseCategory::Clothes,
-            "bills" => ExpenseCategory::Bills,
             "rent" => ExpenseCategory::Rent,
+            "bills" => ExpenseCategory::Bills,
+            "clothes" => ExpenseCategory::Clothes,
+            "transport" => ExpenseCategory::Transport,
             _ => {
                 return Err(format!(
                     "Unknown category '{category_text}'. Use Food, Transport, Clothes, Bills, or Rent."
