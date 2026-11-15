@@ -3,9 +3,11 @@ mod expense {
     // print categories for debugging and compare them in tests.
     #[derive(Debug, PartialEq, Eq)]
     // three choices.
-    pub enum Category {
+    pub enum ExpenseCategory {
         Food,
-
+        Rent,
+        Bills,
+        Clothes,
         Transport,
         // any category not specifically listed above.
         Other,
@@ -17,7 +19,7 @@ mod expense {
         //  the expense amount as a decimal number.
         pub amount: f64,
         //  the expense's category.
-        pub category: Category,
+        pub category: ExpenseCategory,
         //  an optional note: Some(text) if present, or None if absent.
         pub note: Option<String>,
     }
@@ -42,11 +44,11 @@ mod expense {
         // match the category text to a known variant, unrecognized names become Other.
         let category = match category_text.trim().to_lowercase().as_str() {
             // treat "food", regardless of letter case, as the Food category.
-            "food" => Category::Food,
+            "food" => ExpenseCategory::Food,
             // treat "transport", regardless of letter case, as the Transport category.
-            "transport" => Category::Transport,
+            "transport" => ExpenseCategory::Transport,
             // use Other for every category name not listed above.
-            _ => Category::Other,
+            _ => ExpenseCategory::Other,
         };
 
         // take the third piece as the note, use empty text if no third piece exists.
@@ -94,7 +96,7 @@ mod expense {
 
             assert_eq!(expense.amount, 12.50);
 
-            assert_eq!(expense.category, Category::Food);
+            assert_eq!(expense.category, ExpenseCategory::Food);
 
             assert_eq!(expense.note.as_deref(), Some("lunch"));
         }
@@ -104,7 +106,7 @@ mod expense {
 use std::{fs::read, path::Prefix::VerbatimDisk};
 
 // expense module's names available to the main function.
-use expense::{Category, parse_expense, print_expense};
+use expense::{ExpenseCategory, parse_expense, print_expense};
 
 // main rust program
 fn main() {
@@ -143,7 +145,7 @@ fn main() {
         // visit the saved expenses without taking them out of the vector.
         .iter()
         // keep only expenses that match the Food category.
-        .filter(|expense| expense.category == Category::Food)
+        .filter(|expense| expense.category == ExpenseCategory::Food)
         // count how many expenses passed the filter.
         .count();
 
