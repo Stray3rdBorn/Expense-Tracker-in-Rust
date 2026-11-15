@@ -101,13 +101,26 @@ mod expense {
     }
 }
 
+use std::{fs::read, path::Prefix::VerbatimDisk};
+
 // expense module's names available to the main function.
 use expense::{Category, parse_expense, print_expense};
 
 // main rust program
 fn main() {
-    let line = read_input();
-    println!("You entered: {line}");
+    let mut expenses = Vec::new();
+    loop {
+        let line = read_input();
+
+        if line.is_empty() {
+            break;
+        }
+        println!("You entered: {line}");
+        match parse_expense(&line) {
+            Ok(expense) => expenses.push(expense),
+            Err(error) => println!("Skipping your input: {error}"),
+        }
+    }
 
     // take input from terminal
     fn read_input() -> String {
@@ -116,14 +129,6 @@ fn main() {
             .read_line(&mut input)
             .expect("Could not read input");
         input.trim().to_string()
-    }
-
-    // growable list that will hold successfully parsed expenses.
-    let mut expenses = Vec::new();
-
-    match parse_expense(&line) {
-        Ok(expense) => expenses.push(expense),
-        Err(error) => println!("Skipping your input: {error}"),
     }
 
     // borrow each saved expense in turn so it can be printed without removing it from the list.
