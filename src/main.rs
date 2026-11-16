@@ -141,7 +141,7 @@ fn main() {
     fn read_input() -> String {
         let mut input = String::new();
         println!(
-            "Enter amount,category,note (example: 12.50,Food,lunch). Categories: Food, Rent, Bills, Clothes, Transport. Press Enter on a blank line to finish."
+            "Enter amount, category, note (example: 12.50,Food,lunch). Categories: Food, Rent, Bills, Clothes, Transport. Press Enter on a blank line to finish."
         );
         std::io::stdin()
             .read_line(&mut input)
@@ -160,16 +160,5 @@ fn main() {
 
     // read each amount, transform the amounts into a sequence, and add them together.
     let total: f64 = expenses.iter().map(|expense| expense.amount).sum();
-    // count only expenses whose category is Food.
-    let food_count = expenses
-        // visit the saved expenses without taking them out of the vector.
-        .iter()
-        // keep only expenses that match the Food category.
-        .filter(|expense| expense.category == ExpenseCategory::Food)
-        // count how many expenses passed the filter.
-        .count();
-
     println!("Total: {total:.2}");
-
-    println!("Food expenses: {food_count}");
 }
