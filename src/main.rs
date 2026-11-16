@@ -1,7 +1,8 @@
 // the expense-related types and functions grouped under the `expense` name.
 mod expense {
+    use serde::{Deserialize, Serialize};
     // print categories for debugging and compare them in tests.
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
     // five choices.
     pub enum ExpenseCategory {
         Food,
@@ -12,7 +13,7 @@ mod expense {
     }
 
     // information stored for one expense.
-    #[derive(Debug)]
+    #[derive(Debug, Deserialize, Serialize)]
     pub struct Expense {
         //  the expense amount as a decimal number.
         pub amount: f64,
@@ -112,7 +113,12 @@ use expense::{ExpenseCategory, parse_expense, print_expense};
 
 // main rust program
 fn main() {
-    let mut expenses = Vec::new();
+    let mut expenses = Vec<expense::Expense> = match std::fs::read_to_string("expense.json") {
+        Ok(json) => serde_json::from_str(&json).expect("exepenses.json cotains invalid JSON"),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Vec::new(),
+        Err(error) => panic!("Could not read expenses.json: {error}"),
+    };
+    
     loop {
         let line = read_input();
 
