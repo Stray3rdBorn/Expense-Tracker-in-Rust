@@ -1,0 +1,12 @@
+[
+  {
+    "amount": 12.0,
+    "category": "Food",
+    "note": "dinner"
+  },
+  {
+    "amount": 100.0,
+    "category": "Rent",
+    "note": "march"
+  }
+]

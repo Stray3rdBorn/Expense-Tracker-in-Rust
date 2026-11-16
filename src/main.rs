@@ -1,5 +1,6 @@
 // the expense-related types and functions grouped under the `expense` name.
 mod expense {
+    // Serialize means “turn this into data to save”; Deserialize means “rebuild it from saved data.”
     use serde::{Deserialize, Serialize};
     // print categories for debugging and compare them in tests.
     #[derive(Debug, PartialEq, Eq, Deserialize, Serialize)]
@@ -113,12 +114,16 @@ use expense::{ExpenseCategory, parse_expense, print_expense};
 
 // main rust program
 fn main() {
-    let mut expenses = Vec<expense::Expense> = match std::fs::read_to_string("expense.json") {
-        Ok(json) => serde_json::from_str(&json).expect("exepenses.json cotains invalid JSON"),
+    // let creates expenses, mut means the list can change, Vec means a growable list, match checks whether reading the file worked
+    let mut expenses: Vec<expense::Expense> = match std::fs::read_to_string("expense.json") {
+        // Ok means the file was read, json holds its text, from_str turns that text into expenses, expect stops with a message if the JSON is invalid
+        Ok(json) => serde_json::from_str(&json).expect("expense.json contains invalid JSON"),
+        // Err means reading failed, if notfound checks whether the file simply doesn't exist, if so start an empty list
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Vec::new(),
+        // handles other file errors by stopping and showing the error
         Err(error) => panic!("Could not read expenses.json: {error}"),
     };
-    
+
     loop {
         let line = read_input();
 
@@ -144,6 +149,10 @@ fn main() {
         input.trim().to_string()
     }
 
+    // turn the expense list into readable json
+    let json = serde_json::to_string_pretty(&expenses).expect("Could not convert expenses to JSON");
+    // write it to expense.json
+    std::fs::write("expense.json", json).expect("Could not save expenses to expense.json");
     // borrow each saved expense in turn so it can be printed without removing it from the list.
     for expense in &expenses {
         print_expense(expense);
