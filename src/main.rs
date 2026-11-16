@@ -107,8 +107,6 @@ mod expense {
     }
 }
 
-use std::{fs::read, path::Prefix::VerbatimDisk};
-
 // expense module's names available to the main function.
 use expense::{ExpenseCategory, parse_expense, print_expense};
 
