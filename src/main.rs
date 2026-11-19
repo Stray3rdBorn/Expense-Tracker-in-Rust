@@ -136,7 +136,16 @@ fn main() {
         }
         println!("You entered: {line}");
         match parse_expense(&line) {
-            Ok(expense) => expenses.push(expense),
+            Ok(expense) => {
+                // add the new expense to the list.
+                expenses.push(expense);
+                // turn the whole list into readable json.
+                let json = serde_json::to_string_pretty(&expenses)
+                    .expect("Could not convert expenses to JSON");
+                // overwrite expense.json so the new expense is saved right away.
+                std::fs::write("expense.json", json)
+                    .expect("Could not save expenses to expense.json");
+            }
             Err(error) => println!("Skipping your input: {error}"),
         }
     }
