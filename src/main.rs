@@ -114,7 +114,7 @@ mod expense {
 }
 
 // expense module's names available to the main function.
-use expense::{ExpenseCategory, parse_expense, print_expense};
+use expense::{parse_expense, print_expense};
 
 // main rust program
 fn main() {
@@ -125,7 +125,7 @@ fn main() {
         // Err means reading failed, if notfound checks whether the file simply doesn't exist, if so start an empty list
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Vec::new(),
         // handles other file errors by stopping and showing the error
-        Err(error) => panic!("Could not read expenses.json: {error}"),
+        Err(error) => panic!("Could not read expense.json: {error}"),
     };
 
     loop {
@@ -162,10 +162,6 @@ fn main() {
         input.trim().to_string()
     }
 
-    // turn the expense list into readable json
-    let json = serde_json::to_string_pretty(&expenses).expect("Could not convert expenses to JSON");
-    // write it to expense.json
-    std::fs::write("expense.json", json).expect("Could not save expenses to expense.json");
     // borrow each saved expense in turn so it can be printed without removing it from the list.
     for expense in &expenses {
         print_expense(expense);
