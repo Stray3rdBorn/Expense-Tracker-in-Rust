@@ -77,15 +77,17 @@ On the next run the saved expenses load first, so new ones are added to the old 
 ## Security and robustness
 
 - Bad input never crashes the tool. A wrong amount, an unknown category or a missing part is skipped with a message.
+- The amount must be a finite number, so `nan` and `inf` are rejected and the total can never become `NaN`.
+- Negative amounts are allowed on purpose, so refunds and corrections work.
 - Input is trimmed and the category is matched against a fixed list, so nothing else can be stored as a category.
+- Every expense is saved to `expense.json` as soon as it is added, so closing the program early loses nothing.
 - A missing `expense.json` is treated as a first run and starts an empty list.
 - The note is stored as plain text and printed as text, never run as anything.
 - No unsafe code and no network access.
 
 Known limits:
 
-- The amount accepts `nan`, `inf` and negative numbers, so `nan` makes the total `NaN`. Negatives are useful for refunds but nothing checks them.
-- Expenses are saved only when I finish with a blank line, so closing the program early loses that session.
 - A corrupted `expense.json` stops the program with an error instead of recovering.
+- The whole file is rewritten after each expense, so a crash in the middle of a write could corrupt it. Writing to a temporary file and renaming it would fix this.
 - The data file is plain text in the folder where the program runs.
-- Amounts are stored as decimal numbers, which can drift by tiny fractions
+- Amounts are stored as decimal numbers, which can drift by tiny fractions, so not suitable for real accounting.
