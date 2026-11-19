@@ -41,6 +41,12 @@ mod expense {
             .parse::<f64>()
             .map_err(|_| "amount must be a number".to_string())?;
 
+        // reject nan and inf, negative amounts stay allowed so refunds and corrections work.
+        if !amount.is_finite() {
+            // return an error message, the caller skips the line and prints this message.
+            return Err("Amount must be a finite number.".to_string());
+        }
+
         // match the category text to a known variant
         let category = match category_text.trim().to_lowercase().as_str() {
             "food" => ExpenseCategory::Food,
